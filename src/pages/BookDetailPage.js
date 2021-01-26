@@ -1,54 +1,30 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Button, Col, Container, Row } from "react-bootstrap";
 import { ClipLoader } from "react-spinners";
 import { useParams } from "react-router-dom";
-import { toast } from "react-toastify";
-import api from "../apiService";
+import { useDispatch, useSelector } from 'react-redux';
+import bookActions from '../redux/actions/book.actions';
+import cartActions from '../redux/actions/cart.actions';
+import AlertMsg from "../components/AlertMsg";
+
 
 const BACKEND_API = process.env.REACT_APP_BACKEND_API;
 
 const BookDetailPage = () => {
-  const [loading, setLoading] = useState(false);
-  const [book, setBook] = useState(null);
-  const [addingBook, setAddingBook] = useState(false);
   const params = useParams();
   const bookId = params.id;
 
-  const addToReadingList = (book) => {
-    setAddingBook(book);
-  };
+  const book = useSelector((state) => state.book.selectedBook);
+  const loading = useSelector((state) => state.book.loading);
 
+  const dispatch = useDispatch()
   useEffect(() => {
-    const postData = async () => {
-      if (!addingBook) return;
-      setLoading(true);
-      try {
-        await api.post(`/favorites`, addingBook);
-        toast.success("The book has been added to the reading list!");
-      } catch (error) {
-        toast.error(error.message);
-      }
-      setLoading(false);
-    };
-    postData();
-  }, [addingBook]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const res = await api.get(`/books/${bookId}`);
-        setBook(res.data);
-      } catch (error) {
-        toast.error(error.message);
-      }
-      setLoading(false);
-    };
-    fetchData();
-  }, [bookId]);
+    dispatch(bookActions.getSingleBook(bookId));
+  }, [dispatch, bookId]);
 
   return (
     <Container>
+      <AlertMsg/>
       {loading ? (
         <div className="text-center">
           <ClipLoader color="#f86c6b" size={150} loading={true} />
@@ -83,9 +59,9 @@ const BookDetailPage = () => {
                 <div>
                   <strong>Language:</strong> {book.language}
                 </div>
-                <Button onClick={() => addToReadingList(book)}>
-                  Add to Reading List
-                </Button>{" "}
+                <Button onClick={() => dispatch(cartActions.addBook(book))}>
+                  Add to Cart
+                </Button>
               </>
             )}
           </Col>

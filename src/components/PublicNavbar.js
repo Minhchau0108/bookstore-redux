@@ -3,8 +3,10 @@ import { Navbar, Nav } from "react-bootstrap";
 import logo from "../images/logo.svg";
 import githubIco from "../images/github_icon.png";
 import { NavLink } from "react-router-dom";
+import { useSelector } from 'react-redux';
 
 const PublicNavbar = () => {
+  const books = useSelector((state) => state.cart.cart);
   return (
     <Navbar bg="light" expand="lg">
       <Navbar.Brand>
@@ -13,6 +15,9 @@ const PublicNavbar = () => {
       <Nav className="mr-auto">
         <Nav.Link as={NavLink} to="/">
           Home
+        </Nav.Link>
+        <Nav.Link as={NavLink} to="/cart">
+          Cart ({books.length})
         </Nav.Link>
         <Nav.Link as={NavLink} to="/reading">
           Reading List

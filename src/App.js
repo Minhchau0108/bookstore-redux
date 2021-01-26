@@ -8,6 +8,7 @@ import ReadingPage from "./pages/ReadingPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import BookDetailPage from "./pages/BookDetailPage";
 import AlertMsg from "./components/AlertMsg";
+import CartPage from './pages/CartPage'
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
       <AlertMsg />
       <Switch>
         <Route exact path="/books/:id" component={BookDetailPage} />
+        <Route exact path="/cart" component={CartPage} />
         <Route exact path="/reading" component={ReadingPage} />
         <Route exact path="/" component={HomePage} />
         <Route component={NotFoundPage} />

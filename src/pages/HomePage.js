@@ -1,25 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { Alert, Card, Col, Container, Row } from "react-bootstrap";
+import {Card, Col, Container, Row } from "react-bootstrap";
 import { ClipLoader } from "react-spinners";
-
 import { useHistory } from "react-router-dom";
 import PaginationBar from "../components/PaginationBar";
 import SearchForm from "../components/SearchForm";
-import api from "../apiService";
+import { useDispatch, useSelector } from 'react-redux';
+import bookActions from '../redux/actions/book.actions';
 
 const BACKEND_API = process.env.REACT_APP_BACKEND_API;
 
 const HomePage = () => {
-  const [books, setBooks] = useState([]);
   const [pageNum, setPageNum] = useState(1);
   const totalPage = 10;
   const limit = 10;
 
-  const [loading, setLoading] = useState(false);
   const [searchInput, setSearchInput] = useState("");
   const [query, setQuery] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+ 
 
+  const books = useSelector((state) => state.book.books);
+  const loading = useSelector((state) => state.book.loading)
   const history = useHistory();
 
   const handleClickBook = (bookId) => {
@@ -34,31 +34,17 @@ const HomePage = () => {
     e.preventDefault();
     setQuery(searchInput);
   };
-
+  
+  const dispatch = useDispatch()
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        let url = `/books?_page=${pageNum}&_limit=${limit}`;
-        if (query) url += `&q=${query}`;
-        const res = await api.get(url);
-        console.log(res);
-        setBooks(res.data);
-        setErrorMessage("");
-      } catch (error) {
-        setErrorMessage(error.message);
-      }
-      setLoading(false);
-    };
-    fetchData();
-  }, [pageNum, limit, query]);
+    dispatch(bookActions.getBooks(pageNum, limit, query));
+  }, [dispatch, pageNum, limit, query]);
 
   return (
     <Container>
       <Row className="justify-content-center">
         <Col md={6}>
           <h1 className="text-center">Book Store</h1>
-          {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
           <SearchForm
             loading={loading}
             searchInput={searchInput}
